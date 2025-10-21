@@ -33,6 +33,9 @@ num_cross_arrows = 80
 amplitude_v = 1.
 amplitude_h = 1.
 
+is_reverse = False
+pos_neg = 1.
+
 """ Create figure and axes """
 title_ax0 = "Twisted polarization"
 # title_ax1 = "aaa"
@@ -292,6 +295,14 @@ def clear_snapped_path():
     path_h_snap.clear_path()
 
 
+def set_reverse_twist(value):
+    global pos_neg
+    if value:
+        pos_neg = -1.
+    else:
+        pos_neg = 1.
+
+
 def create_parameter_setter():
     frm_twist = ttk.Labelframe(root, relief='ridge', text="Twist", labelanchor='n', width=100)
     frm_twist.pack(side='left')
@@ -325,6 +336,12 @@ def create_parameter_setter():
         command=lambda: set_phase(float(var_phase.get())), width=8
     )
     spn_phase.pack(side='left')
+
+    var_is_reverse = tk.IntVar(root)
+    chk_is_reverse = tk.Checkbutton(frm_twist, text="Reverse rotation", variable=var_is_reverse,
+                                    command=lambda: set_reverse_twist(var_is_reverse.get()))
+    chk_is_reverse.pack(side='left')
+    var_is_reverse.set(is_reverse)
 
     frm_snap = ttk.Labelframe(root, relief='ridge', text="Snap path", labelanchor='n', width=100)
     frm_snap.pack(side='left')
@@ -376,7 +393,7 @@ def update_diagrams():
     global t, rot_1_h, rot_1_v
     t = cnt.get() / 10.
 
-    rot_1_v = r_twist * np.sin((x_seq - omega * t + phase_twist_pi) * np.pi * num_turn)
+    rot_1_v = pos_neg * r_twist * np.sin((x_seq - omega * t + phase_twist_pi) * np.pi * num_turn)
     rot_1_h = r_twist * np.cos((x_seq - omega * t + phase_twist_pi) * np.pi * num_turn)
     plt_rot_1.set_data_3d(x_seq, rot_1_h, rot_1_v)
 
