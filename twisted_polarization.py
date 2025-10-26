@@ -408,11 +408,14 @@ def draw_static_diagrams():
 
 
 def set_twist():
+    pass
+    """
     for i in range(num_cross_arrows):
         theta_delta = np.pi * num_turn
         x = i * (x_max - x_min) / num_cross_arrows
         theta = x * theta_delta
         cross_arrows[i].set_twist(theta)
+    """
 
 
 def update_diagrams():
