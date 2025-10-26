@@ -259,7 +259,10 @@ def set_path():
         p_h = arrow.get_vector_h()
         path_h.append_path(np.array([p_h[0], p_h[1], p_h[2]]))
 
-        path_v_plus_h.append_path(np.array([p_v[0], p_v[1] + p_h[1], p_v[2] + p_h[2]]))
+        path_v_plus_h.append_path(np.array([p_v[0],
+                                            1. / np.sqrt(2.) * (p_v[1] + p_h[1]),
+                                            1. / np.sqrt(2.) * (p_v[2] + p_h[2])
+                                            ]))
 
 
 def set_path_snap():
@@ -470,7 +473,7 @@ if __name__ == "__main__":
     dummy2, = ax0.plot(np.array([0, 0]), np.array([0, 0]), np.array([0, 0]),
                        color="green", linewidth=0.3, linestyle="-", label="Horizontal component(H)")
     dummy3, = ax0.plot(np.array([0, 0]), np.array([0, 0]), np.array([0, 0]),
-                       color="orange", linewidth=1, linestyle="-", label="Helicity(V + H)")
+                       color="orange", linewidth=1, linestyle="-", label=r"$Helicity(\frac{1}{\sqrt{2}}(V + H))$")
 
     path_v_snap = Path(ax0, "--", 1, "red")
     path_h_snap = Path(ax0, "--", 0.5, "green")
