@@ -36,6 +36,8 @@ amplitude_h = 1.
 is_reverse = False
 pos_neg = 1.
 
+is_wave = True
+
 """ Create figure and axes """
 title_ax0 = "Twisted polarization"
 # title_ax1 = "aaa"
@@ -268,11 +270,16 @@ def set_path():
 def set_path_snap():
     path_v_snap.clear_path()
     path_h_snap.clear_path()
+    path_helicity_snap.clear_path()
     for arrow in cross_arrows:
         p_v = arrow.get_vector_v()
         path_v_snap.append_path(np.array([p_v[0], p_v[1], p_v[2]]))
         p_h = arrow.get_vector_h()
         path_h_snap.append_path(np.array([p_h[0], p_h[1], p_h[2]]))
+        path_helicity_snap.append_path(np.array([p_v[0],
+                                       1. / np.sqrt(2.) * (p_v[1] + p_h[1]),
+                                       1. / np.sqrt(2.) * (p_v[2] + p_h[2])
+                                       ]))
 
 
 def set_turn(value):
@@ -306,19 +313,15 @@ def set_reverse_twist(value):
         pos_neg = 1.
 
 
+def set_is_wave(value):
+    global is_wave
+    is_wave = value
+    update_diagrams()
+
+
 def create_parameter_setter():
     frm_twist = ttk.Labelframe(root, relief='ridge', text="Twist", labelanchor='n', width=100)
     frm_twist.pack(side='left')
-
-    lbl_turn = tk.Label(frm_twist, text="Turn(2pi/turn)")
-    lbl_turn.pack(side='left')
-    var_turn = tk.StringVar(root)
-    var_turn.set(str(num_turn))
-    spn_turn = tk.Spinbox(
-        frm_twist, textvariable=var_turn, format='%.1f', from_=-4., to=4., increment=0.1,
-        command=lambda: set_turn(float(var_turn.get())), width=8
-    )
-    spn_turn.pack(side='left')
 
     lbl_radius = tk.Label(frm_twist, text="Radius")
     lbl_radius.pack(side='left')
@@ -328,7 +331,17 @@ def create_parameter_setter():
         frm_twist, textvariable=var_radius, format='%.1f', from_=0., to=4., increment=0.1,
         command=lambda: set_radius(float(var_radius.get())), width=8
     )
+
     spn_radius.pack(side='left')
+    lbl_turn = tk.Label(frm_twist, text="Turn(2pi/turn)")
+    lbl_turn.pack(side='left')
+    var_turn = tk.StringVar(root)
+    var_turn.set(str(num_turn))
+    spn_turn = tk.Spinbox(
+        frm_twist, textvariable=var_turn, format='%.1f', from_=-4., to=4., increment=0.1,
+        command=lambda: set_turn(float(var_turn.get())), width=8
+    )
+    spn_turn.pack(side='left')
 
     lbl_phase = tk.Label(frm_twist, text="Phase(pi)")
     lbl_phase.pack(side='left')
@@ -358,6 +371,15 @@ def create_parameter_setter():
                                  command=lambda: clear_snapped_path())
     rd_op_clear.pack(side='left')
     var_snap_op.set(2)
+
+    frm_wave = ttk.Labelframe(root, relief="ridge", text="Wave", labelanchor='n')
+    frm_wave.pack(side="left", fill=tk.Y)
+
+    var_chk_wave = tk.BooleanVar(root)
+    chk_wave = tk.Checkbutton(frm_wave, text="Apply", variable=var_chk_wave,
+                              command=lambda: set_is_wave(var_chk_wave.get()))
+    chk_wave.pack(anchor=tk.W)
+    var_chk_wave.set(is_wave)
 
 
 def create_animation_control():
@@ -404,8 +426,11 @@ def update_diagrams():
 
     for i in range(num_cross_arrows):
         x = i * (x_max - x_min) / num_cross_arrows
-        amp_v = amplitude_v * np.sin((x - omega * t) * np.pi)
-        amp_h = amplitude_h * np.cos((x - omega * t) * np.pi)
+        if is_wave:
+            amp_v = amplitude_v * np.sin((x - omega * t) * np.pi)
+            amp_h = amplitude_h * np.cos((x - omega * t) * np.pi)
+        else:
+            amp_v, amp_h = 1., 1.
         cross_arrows[i].set_amplitude(amp_v, amp_h)
         index = np.argmin(np.abs(x - x_seq))
         z = rot_1_v[index]
@@ -477,6 +502,7 @@ if __name__ == "__main__":
 
     path_v_snap = Path(ax0, "--", 1, "red")
     path_h_snap = Path(ax0, "--", 0.5, "green")
+    path_helicity_snap = Path(ax0, "--", 1, "orange")
 
     ax0.legend(loc='lower right', fontsize=8)
     # ax1.legend(loc='lower right', fontsize=8)
