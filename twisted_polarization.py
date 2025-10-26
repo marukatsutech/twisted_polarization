@@ -310,12 +310,12 @@ def create_parameter_setter():
     frm_twist = ttk.Labelframe(root, relief='ridge', text="Twist", labelanchor='n', width=100)
     frm_twist.pack(side='left')
 
-    lbl_turn = tk.Label(frm_twist, text="Turn(2pi/z)")
+    lbl_turn = tk.Label(frm_twist, text="Turn(2pi/turn)")
     lbl_turn.pack(side='left')
     var_turn = tk.StringVar(root)
     var_turn.set(str(num_turn))
     spn_turn = tk.Spinbox(
-        frm_twist, textvariable=var_turn, format='%.1f', from_=0., to=4., increment=0.1,
+        frm_twist, textvariable=var_turn, format='%.1f', from_=-4., to=4., increment=0.1,
         command=lambda: set_turn(float(var_turn.get())), width=8
     )
     spn_turn.pack(side='left')
@@ -404,8 +404,8 @@ def update_diagrams():
 
     for i in range(num_cross_arrows):
         x = i * (x_max - x_min) / num_cross_arrows
-        amp_v = amplitude_v * np.sin((x - omega * t + phase_twist_pi) * np.pi)
-        amp_h = amplitude_h * np.cos((x - omega * t + phase_twist_pi) * np.pi)
+        amp_v = amplitude_v * np.sin((x - omega * t) * np.pi)
+        amp_h = amplitude_h * np.cos((x - omega * t) * np.pi)
         cross_arrows[i].set_amplitude(amp_v, amp_h)
         index = np.argmin(np.abs(x - x_seq))
         z = rot_1_v[index]
@@ -451,15 +451,15 @@ if __name__ == "__main__":
     for i_ in range(num_cross_arrows):
         x_ = i_ * (x_max - x_min) / num_cross_arrows
         origin = np.array([x_, 0., 0.])
-        amp_v = amplitude_v * np.sin((x_ - omega * t + phase_twist_pi) * np.pi)
-        amp_h = amplitude_h * np.cos((x_ - omega * t + phase_twist_pi) * np.pi)
+        amp_v = amplitude_v * np.sin((x_ - omega * t) * np.pi)
+        amp_h = amplitude_h * np.cos((x_ - omega * t) * np.pi)
 
         cross_arrow = CrossArrow(ax0, origin, 0, amp_v, amp_h)
         cross_arrows.append(cross_arrow)
 
     path_v = Path(ax0, "-", 1, "red")
     path_h = Path(ax0, "-", 0.5, "green")
-    path_v_plus_h = Path(ax0, "-", 1, "orange")
+    path_v_plus_h = Path(ax0, "-", 2, "orange")
     set_path()
 
     parameter = fr"$Twist:{num_turn}/2\pi, Phase:{phase_twist_pi}(\pi)$"
@@ -473,7 +473,7 @@ if __name__ == "__main__":
     dummy2, = ax0.plot(np.array([0, 0]), np.array([0, 0]), np.array([0, 0]),
                        color="green", linewidth=0.3, linestyle="-", label="Horizontal component(H)")
     dummy3, = ax0.plot(np.array([0, 0]), np.array([0, 0]), np.array([0, 0]),
-                       color="orange", linewidth=1, linestyle="-", label=r"$Helicity(\frac{1}{\sqrt{2}}(V + H))$")
+                       color="orange", linewidth=2, linestyle="-", label=r"$Helicity(\frac{1}{\sqrt{2}}(V + H))$")
 
     path_v_snap = Path(ax0, "--", 1, "red")
     path_h_snap = Path(ax0, "--", 0.5, "green")
