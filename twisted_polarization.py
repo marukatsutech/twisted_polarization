@@ -303,6 +303,7 @@ def set_phase(value):
 def clear_snapped_path():
     path_v_snap.clear_path()
     path_h_snap.clear_path()
+    path_helicity_snap.clear_path()
 
 
 def set_reverse_twist(value):
