@@ -492,7 +492,7 @@ def create_parameter_setter():
     var_phase_init_wave.set(str(phase_init_wave_pi))
     spn_phase_init_wave = tk.Spinbox(
         frm_wave, textvariable=var_phase_init_wave, format='%.1f', from_=-4., to=4., increment=0.1,
-        command=lambda: set_phase_init_wind(float(var_phase_init_wave.get())), width=8
+        command=lambda: set_phase_init_wave(float(var_phase_init_wave.get())), width=8
     )
     spn_phase_init_wave.pack(side='left')
 
